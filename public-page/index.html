@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="2026 中国公关风险日历与每日内娱影视资讯" />
+    <title>PR Pulse 2026｜中国公关风险日历</title>
+    <style>
+      :root{color-scheme:light;--navy:#071f46;--blue:#0b5cab;--rose:#bd3d68;--paper:#f5f7fa;--line:#dfe6ef;--ink:#17243a;--muted:#66758b}
+      *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}button{font:inherit}
+      header{background:var(--navy);color:white}.top{max-width:1480px;margin:auto;padding:22px 24px;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}.eyebrow{font-size:12px;letter-spacing:.24em;color:#a9c2df;font-weight:700}.top h1{margin:5px 0 0;font-size:22px}.status{font-size:13px;color:#d8e4f2;border:1px solid #ffffff24;border-radius:999px;padding:9px 13px}
+      main{max-width:1480px;margin:auto;padding:22px 24px 48px}.hero{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:end;background:linear-gradient(135deg,#3f1230,#6c2047);color:white;border-radius:18px;padding:24px}.hero h2{font-size:30px;margin:6px 0}.hero p{margin:0;color:#f4dce5;line-height:1.7}.refresh{border:0;border-radius:10px;background:white;color:#8d2c50;padding:11px 16px;font-weight:700;cursor:pointer}.refresh:disabled{opacity:.55}
+      .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0}.stat,.panel{background:white;border:1px solid var(--line);border-radius:14px}.stat{padding:16px}.stat span{display:block;color:var(--muted);font-size:13px}.stat strong{display:block;margin-top:8px;font-size:23px;color:#183a68}.layout{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:18px}.panel{overflow:hidden}.panel-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:center}.panel-head h3{margin:0;font-size:19px}.month-nav{display:flex;gap:8px}.month-nav button{border:1px solid var(--line);background:white;border-radius:8px;padding:7px 11px;cursor:pointer}.week,.calendar{display:grid;grid-template-columns:repeat(7,1fr)}.week{background:#fff1f4;color:#7f4050;font-size:12px;text-align:center;font-weight:700}.week div{padding:11px 4px}.day{min-height:106px;border:0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:white;padding:10px;text-align:left;vertical-align:top;cursor:pointer;position:relative}.day.off{background:#fafbfc;color:#bcc4cf}.day.today{box-shadow:inset 0 0 0 2px var(--blue)}.num{font-weight:700}.event{display:block;margin-top:8px;font-size:12px;line-height:1.4;color:#4d5c70}.dots{position:absolute;left:10px;bottom:9px;display:flex;gap:4px}.dot{width:7px;height:7px;border-radius:50%;background:var(--blue)}.dot.rose{background:#e85d87}.dot.red{background:#d92d20}
+      .news-list{padding:0}.news{display:block;color:inherit;text-decoration:none;padding:16px 18px;border-bottom:1px solid var(--line)}.news:hover{background:#fff8fa}.news b{display:block;line-height:1.55}.meta{font-size:12px;color:var(--muted);margin-top:7px}.empty{padding:30px;text-align:center;color:var(--muted)}.note{margin-top:14px;font-size:12px;line-height:1.7;color:var(--muted)}
+      @media(max-width:960px){.layout{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.day{min-height:86px}.event{font-size:10px}.hero{grid-template-columns:1fr}}
+      @media(max-width:540px){main,.top{padding-left:14px;padding-right:14px}.stats{grid-template-columns:1fr 1fr}.stat strong{font-size:18px}.day{min-height:68px;padding:7px}.event{display:none}.week{font-size:11px}}
+    </style>
+  </head>
+  <body>
+    <header><div class="top"><div><div class="eyebrow">PR PULSE · 2026</div><h1>中国公关风险日历</h1></div><div class="status" id="headerStatus">正在读取最新资讯…</div></div></header>
+    <main>
+      <section class="hero"><div><div class="eyebrow">ENTERTAINMENT DESK</div><h2>今日内娱影视资讯</h2><p>每天北京时间 12:00、18:00、21:00 自动更新，保留原始来源链接，并同步标记到日历。</p></div><button class="refresh" id="refreshButton">刷新页面</button></section>
+      <section class="stats"><div class="stat"><span>今日日期</span><strong id="today">—</strong></div><div class="stat"><span>本时段简报</span><strong id="slot">—</strong></div><div class="stat"><span>今日资讯</span><strong id="newsCount">—</strong></div><div class="stat"><span>最近更新</span><strong id="updated">—</strong></div></section>
+      <div class="layout">
+        <section class="panel"><div class="panel-head"><h3 id="monthTitle">2026 年</h3><div class="month-nav"><button id="prev">上月</button><button id="current">本月</button><button id="next">下月</button></div></div><div class="week"><div>星期日</div><div>星期一</div><div>星期二</div><div>星期三</div><div>星期四</div><div>星期五</div><div>星期六</div></div><div class="calendar" id="calendar"></div></section>
+        <aside class="panel"><div class="panel-head"><h3>最新简报</h3><span class="meta" id="reportDate"></span></div><div class="news-list" id="newsList"></div></aside>
+      </div>
+      <p class="note">说明：“全网”指公开新闻索引的广泛覆盖，不代表穷尽互联网。重要传播决策请打开原文复核；全国性哀悼或临时禁娱安排以正式公告为准。</p>
+    </main>
+    <script>
+      const solemn=[['04-05','清明节 · 慎用娱乐化传播','high'],['05-12','汶川地震纪念日','high'],['07-07','全民族抗战爆发纪念日','high'],['08-15','日本宣布无条件投降纪念日','high'],['09-03','抗战胜利纪念日','high'],['09-18','九一八事变纪念日','critical'],['09-30','烈士纪念日','high'],['12-13','南京大屠杀死难者国家公祭日','critical']];
+      const state={month:new Date().getMonth()+1,events:[],report:null};
+      const fmtDate=d=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Shanghai',year:'numeric',month:'2-digit',day:'2-digit'}).format(d);
+      const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      async function load(){
+        const [calendar,report]=await Promise.all([fetch('./calendar-2026.json?3').then(r=>r.json()),fetch('./entertainment.json?'+Date.now()).then(r=>r.json())]);
+        state.events=[...(calendar.events||[])];state.report=report;render();
+      }
+      function render(){
+        const now=new Date(),today=fmtDate(now),report=state.report||{};
+        document.querySelector('#today').textContent=today;document.querySelector('#slot').textContent=report.slot||'待更新';document.querySelector('#newsCount').textContent=`${(report.items||[]).length} 条`;
+        document.querySelector('#updated').textContent=report.generatedAt?new Date(report.generatedAt).toLocaleTimeString('zh-CN',{timeZone:'Asia/Shanghai',hour:'2-digit',minute:'2-digit',hour12:false}):'—';
+        document.querySelector('#reportDate').textContent=report.reportDate||'';document.querySelector('#headerStatus').textContent=report.reportDate===today?'今日资讯已更新':'等待下一次自动更新';
+        const list=document.querySelector('#newsList');list.innerHTML=(report.items||[]).length?(report.items||[]).map((x,i)=>`<a class="news" href="${esc(x.url)}" target="_blank" rel="noreferrer"><b>${i+1}. ${esc(x.title)}</b><div class="meta">${esc(x.category)} · ${esc(x.domain)}</div></a>`).join(''):'<div class="empty">本时段暂无资讯，稍后自动重试。</div>';
+        renderCalendar(today);
+      }
+      function renderCalendar(today){
+        const month=state.month,first=new Date(2026,month-1,1),days=new Date(2026,month,0).getDate(),lead=first.getDay(),cells=[];
+        document.querySelector('#monthTitle').textContent=`2026 年 ${month} 月`;
+        for(let i=0;i<lead;i++)cells.push('<div class="day off"></div>');
+        for(let d=1;d<=days;d++){
+          const date=`2026-${String(month).padStart(2,'0')}-${String(d).padStart(2,'0')}`;const events=state.events.filter(e=>e.date===date);const solemnItem=solemn.find(x=>`2026-${x[0]}`===date);const hasNews=state.report?.reportDate===date;
+          const title=solemnItem?.[1]||events[0]?.title||'';cells.push(`<button class="day ${date===today?'today':''}" title="${esc(title)}"><span class="num">${d}</span>${title?`<span class="event">${esc(title)}</span>`:''}<span class="dots">${events.length?'<i class="dot"></i>':''}${hasNews?'<i class="dot rose"></i>':''}${solemnItem?'<i class="dot red"></i>':''}</span></button>`);
+        }
+        document.querySelector('#calendar').innerHTML=cells.join('');
+      }
+      document.querySelector('#prev').onclick=()=>{state.month=state.month===1?12:state.month-1;render()};document.querySelector('#next').onclick=()=>{state.month=state.month===12?1:state.month+1;render()};document.querySelector('#current').onclick=()=>{state.month=new Date().getMonth()+1;render()};document.querySelector('#refreshButton').onclick=()=>location.reload();
+      load().catch(()=>{document.querySelector('#headerStatus').textContent='资讯读取失败，请稍后刷新';document.querySelector('#newsList').innerHTML='<div class="empty">暂时无法读取数据。</div>'});
+    </script>
+  </body>
+</html>
