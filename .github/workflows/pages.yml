@@ -1,0 +1,74 @@
+name: Update and publish calendar
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - public-page/**
+      - scripts/update-entertainment.mjs
+      - lib/calendar-2026.json
+      - .github/workflows/pages.yml
+  schedule:
+    - cron: "0 4,10,13 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build current entertainment report
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const pageUrl = 'https://www.news.cn/ent/index.html';
+          const terms = /(电影|票房|上映|定档|院线|电视剧|剧集|网剧|微短剧|综艺|演员|导演|制片|影视|影节|影展)/i;
+          const decode = value => value.replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCodePoint(parseInt(code, 16))).replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code))).replace(/&(amp|apos|gt|lt|quot);/g, (_, name) => ({amp:'&',apos:"'",gt:'>',lt:'<',quot:'"'})[name]);
+          const text = value => decode(value.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ')).trim();
+          const category = title => /(电影|票房|上映|定档|院线|影节|影展)/i.test(title) ? '电影与票房' : /(电视剧|剧集|网剧|微短剧|综艺|电视节目)/i.test(title) ? '剧集与综艺' : '艺人与行业';
+          const parts = Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Shanghai',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',hourCycle:'h23'}).formatToParts(new Date()).map(part => [part.type, part.value]));
+          const hour = Number(parts.hour), slot = hour >= 21 ? '21:00' : hour >= 18 ? '18:00' : '12:00';
+          const response = await fetch(pageUrl, {headers:{'user-agent':'Mozilla/5.0 PR-Pulse-GitHub-Pages/1.0'}});
+          const html = response.ok ? (await response.text()).slice(0, 800000) : '';
+          const seen = new Set(), items = [];
+          const pattern = /<a\b[^>]*href=(['"])([^'"]*\/(?:ent\/)?\d{8}\/[a-z0-9]+\/c\.html)\1[^>]*>([\s\S]*?)<\/a>/gi;
+          for (const match of html.matchAll(pattern)) {
+            const title = text(match[3]);
+            if (title.length < 6 || title.length > 120 || !terms.test(title)) continue;
+            const url = new URL(decode(match[2]), pageUrl).toString();
+            if (seen.has(url)) continue;
+            seen.add(url); items.push({title, category:category(title), domain:'news.cn', url});
+            if (items.length === 8) break;
+          }
+          if (!items.length) items.push({title:'本时段自动检索暂未返回新条目，请查看新华社文娱频道',category:'资讯索引',domain:'news.cn',url:pageUrl});
+          fs.writeFileSync('public-page/entertainment.json', JSON.stringify({reportDate:`${parts.year}-${parts.month}-${parts.day}`,slot,generatedAt:new Date().toISOString(),items},null,2)+'\n');
+          NODE
+      - run: |
+          mkdir -p _site
+          cp -R public-page/. _site/
+          cp lib/calendar-2026.json _site/calendar-2026.json
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
