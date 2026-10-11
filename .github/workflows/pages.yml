@@ -38,8 +38,8 @@ jobs:
       - name: Build current entertainment report
         shell: bash
         run: |
-          node <<'NODE'
-          const fs = require('node:fs');
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
           const pageUrl = 'https://www.news.cn/ent/index.html';
           const terms = /(电影|票房|上映|定档|院线|电视剧|剧集|网剧|微短剧|综艺|演员|导演|制片|影视|影节|影展)/i;
           const decode = value => value.replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCodePoint(parseInt(code, 16))).replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code))).replace(/&(amp|apos|gt|lt|quot);/g, (_, name) => ({amp:'&',apos:"'",gt:'>',lt:'<',quot:'"'})[name]);
